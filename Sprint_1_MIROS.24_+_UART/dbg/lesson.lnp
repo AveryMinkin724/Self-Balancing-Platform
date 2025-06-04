@@ -2,6 +2,7 @@
 ".\dbg\main.o"
 ".\dbg\bsp.o"
 ".\dbg\uart.o"
+".\dbg\logger.o"
 ".\dbg\startup_tm4c123gh6pm.o"
 ".\dbg\system_tm4c123gh6pm.o"
 ".\dbg\miros.o"

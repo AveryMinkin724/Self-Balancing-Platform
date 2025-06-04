@@ -2,6 +2,7 @@
 #include "miros.h" 
 #include "bsp.h"
 #include "uart.h"
+#include "logger.h"
 
 uint32_t stack_LEDHeartbeat[40]; //initialize array for stack, this will automatically be assigned to area of RAM
 OSThread LEDHeartbeat;
@@ -9,10 +10,10 @@ void Task_LEDHeartbeat(void) {
 		while (1) {
 				/* Keeps a green LED blinking to indicate system alive */
         BSP_ledGreenOn();
-				UART5_Transmit_string("Green On\r\n");
+				Logger_log("Green On\r\n");
         BSP_delay(BSP_TICKS_PER_SEC / 4U);
         BSP_ledGreenOff();
-				UART5_Transmit_string("Green Off\r\n");
+				Logger_log("Green Off\r\n");
         BSP_delay(BSP_TICKS_PER_SEC * 4U);
     }
 }
@@ -32,7 +33,7 @@ void Task_SensorUpdate() {
 				/* Placeholder for IMU sampling & filtering */
 				static uint32_t counter = 0;
 				if (++counter >= 10000) {  // Assuming this task runs at 100 Hz
-						UART5_Transmit_string("Accel: x=..., y=..., z=...\r\n");
+						Logger_log("Accel: x=..., y=..., z=...\r\n");
 						counter = 0;
 				}
 		}
@@ -43,6 +44,9 @@ int main(void) {
 		BSP_init();
 		OS_init();
     
+		/* start UART Logging thread */
+    Logger_init(); 
+	
 		/* fabricate Cortex-M ISR stack frame for LEDHeartbeat */
 		OSThread_start(&LEDHeartbeat,
 									 &Task_LEDHeartbeat,

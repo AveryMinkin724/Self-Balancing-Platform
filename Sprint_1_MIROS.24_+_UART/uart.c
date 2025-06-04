@@ -33,6 +33,7 @@ void uart_init(void)
 
 void Tiva_UART5_Transmitter_polling(char c)
 {
+		// Blocking implementation
 		while((UART5_FR_R & (1U << 5)) != 0); /* wait until Tx buffer not full */
 		UART5_DR_R = c;                  /* before giving it another byte */
 }

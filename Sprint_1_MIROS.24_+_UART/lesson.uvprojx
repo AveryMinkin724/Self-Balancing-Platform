@@ -414,6 +414,16 @@
               <FileType>5</FileType>
               <FilePath>.\tm4c.h</FilePath>
             </File>
+            <File>
+              <FileName>logger.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\logger.h</FilePath>
+            </File>
+            <File>
+              <FileName>logger.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\logger.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
