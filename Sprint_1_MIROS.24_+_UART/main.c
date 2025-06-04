@@ -1,38 +1,41 @@
 #include <stdint.h> // C99 standard integers
 #include "miros.h" 
 #include "bsp.h"
+#include "uart.h"
 
-uint32_t stack_blinky1[40]; //initialize array for stack, this will automatically be assigned to area of RAM
-OSThread blinky1;
-void main_blinky1(void) {
-    while (1) {
+uint32_t stack_LEDHeartbeat[40]; //initialize array for stack, this will automatically be assigned to area of RAM
+OSThread LEDHeartbeat;
+void Task_LEDHeartbeat(void) {		
+		while (1) {
+				/* Keeps a green LED blinking to indicate system alive */
         BSP_ledGreenOn();
+				UART5_Transmit_string("Green On\r\n");
         BSP_delay(BSP_TICKS_PER_SEC / 4U);
         BSP_ledGreenOff();
-        BSP_delay(BSP_TICKS_PER_SEC * 3U / 4U);
+				UART5_Transmit_string("Green Off\r\n");
+        BSP_delay(BSP_TICKS_PER_SEC * 4U);
     }
 }
 
-uint32_t stack_blinky2[40];
-OSThread blinky2;
-void main_blinky2(void) {
-    while (1) {
-        BSP_ledBlueOn();
-        BSP_delay(BSP_TICKS_PER_SEC / 2U);
-        BSP_ledBlueOff();
-        BSP_delay(BSP_TICKS_PER_SEC / 3U);
-    }
+uint32_t stack_ControlLoop[40];
+OSThread ControlLoop;
+void Task_ControlLoop(void) {
+		while (1) {
+				/* Placeholder for balance control logic (PID, etc.) */
+		}
 }
 
-uint32_t stack_blinky3[40];
-OSThread blinky3;
-void main_blinky3() {
-    while (1) {
-        BSP_ledRedOn();
-        //BSP_delay(BSP_TICKS_PER_SEC / 3U);
-        BSP_ledRedOff();
-        //BSP_delay(BSP_TICKS_PER_SEC * 3U / 5U);
-    }
+uint32_t stack_SensorUpdate[40];
+OSThread SensorUpdate;
+void Task_SensorUpdate() {
+		while (1) {
+				/* Placeholder for IMU sampling & filtering */
+				static uint32_t counter = 0;
+				if (++counter >= 10000) {  // Assuming this task runs at 100 Hz
+						UART5_Transmit_string("Accel: x=..., y=..., z=...\r\n");
+						counter = 0;
+				}
+		}
 }
 
 /* background code: sequential with blocking version */
@@ -40,20 +43,20 @@ int main(void) {
 		BSP_init();
 		OS_init();
     
-		/* fabricate Cortex-M ISR stack frame for blinky1 */
-		OSThread_start(&blinky1,
-									 &main_blinky1,
-									 stack_blinky1, sizeof(stack_blinky1));
+		/* fabricate Cortex-M ISR stack frame for LEDHeartbeat */
+		OSThread_start(&LEDHeartbeat,
+									 &Task_LEDHeartbeat,
+									 stack_LEDHeartbeat, sizeof(stack_LEDHeartbeat));
 		
-		/* fabricate Cortex-M ISR stack frame for blinky2 */
-		OSThread_start(&blinky2,
-									 &main_blinky2,
-									 stack_blinky2, sizeof(stack_blinky2));
+		/* fabricate Cortex-M ISR stack frame for ControlLoop */
+		OSThread_start(&ControlLoop,
+									 &Task_ControlLoop,
+									 stack_ControlLoop, sizeof(stack_ControlLoop));
 		
-		/* start blinky3 thread */
-    OSThread_start(&blinky3,
-                   &main_blinky3,
-                   stack_blinky3, sizeof(stack_blinky3));
+		/* start SensorUpdate thread */
+    OSThread_start(&SensorUpdate,
+                   &Task_SensorUpdate,
+                   stack_SensorUpdate, sizeof(stack_SensorUpdate));
 	
 		/* transfer control to the RTOS to run the threads */
     OS_run();

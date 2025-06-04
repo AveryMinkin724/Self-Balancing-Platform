@@ -1,6 +1,6 @@
 /*************************************
 * MInimal Real-time Operating System (MIROS)
-* version 0.23 (matching lesson 23)
+* version 0.24 (matching lesson 24)
 *
 * This software is a teaching aid to illustrate the concepts underlying
 * a Real-Time Operating System (RTOS). The main goal of the software is

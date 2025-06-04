@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\dbg\lesson.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\dbg\lesson.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Sat May 31 11:15:08 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Sun Jun  1 22:08:26 2025
 <BR><P>
 <H3>Maximum Stack Usage =         68 bytes + Unknown(Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -95,6 +95,9 @@ Function Pointers
  <LI><a href="#[27]">SysCtrl_IRQHandler</a> from startup_tm4c123gh6pm.o(.text) referenced from startup_tm4c123gh6pm.o(RESET)
  <LI><a href="#[a]">SysTick_Handler</a> from bsp.o(.text.SysTick_Handler) referenced 2 times from startup_tm4c123gh6pm.o(RESET)
  <LI><a href="#[77]">SystemInit</a> from system_tm4c123gh6pm.o(.text.SystemInit) referenced from startup_tm4c123gh6pm.o(.text)
+ <LI><a href="#[7b]">Task_ControlLoop</a> from main.o(.text.Task_ControlLoop) referenced 2 times from main.o(.text.main)
+ <LI><a href="#[7a]">Task_LEDHeartbeat</a> from main.o(.text.Task_LEDHeartbeat) referenced 2 times from main.o(.text.main)
+ <LI><a href="#[7c]">Task_SensorUpdate</a> from main.o(.text.Task_SensorUpdate) referenced 2 times from main.o(.text.main)
  <LI><a href="#[1e]">Timer0A_IRQHandler</a> from startup_tm4c123gh6pm.o(.text) referenced from startup_tm4c123gh6pm.o(RESET)
  <LI><a href="#[1f]">Timer0B_IRQHandler</a> from startup_tm4c123gh6pm.o(.text) referenced from startup_tm4c123gh6pm.o(RESET)
  <LI><a href="#[20]">Timer1A_IRQHandler</a> from startup_tm4c123gh6pm.o(.text) referenced from startup_tm4c123gh6pm.o(RESET)
@@ -132,9 +135,6 @@ Function Pointers
  <LI><a href="#[59]">WideTimer5B_IRQHandler</a> from startup_tm4c123gh6pm.o(.text) referenced from startup_tm4c123gh6pm.o(RESET)
  <LI><a href="#[78]">__main</a> from __main.o(!!!main) referenced from startup_tm4c123gh6pm.o(.text)
  <LI><a href="#[79]">assert_failed</a> from bsp.o(.text.assert_failed) referenced from startup_tm4c123gh6pm.o(.text)
- <LI><a href="#[7a]">main_blinky1</a> from main.o(.text.main_blinky1) referenced 2 times from main.o(.text.main)
- <LI><a href="#[7b]">main_blinky2</a> from main.o(.text.main_blinky2) referenced 2 times from main.o(.text.main)
- <LI><a href="#[7c]">main_blinky3</a> from main.o(.text.main_blinky3) referenced 2 times from main.o(.text.main)
  <LI><a href="#[39]">uDMAError_IRQHandler</a> from startup_tm4c123gh6pm.o(.text) referenced from startup_tm4c123gh6pm.o(RESET)
  <LI><a href="#[38]">uDMAST_IRQHandler</a> from startup_tm4c123gh6pm.o(.text) referenced from startup_tm4c123gh6pm.o(RESET)
 </UL>
@@ -679,36 +679,24 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_tickCtr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_blinky2
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_blinky1
+<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_LEDHeartbeat
 </UL>
 
-<P><STRONG><a name="[9a]"></a>BSP_init</STRONG> (Thumb, 66 bytes, Stack size 0 bytes, bsp.o(.text.BSP_init))
-<BR><BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<P><STRONG><a name="[91]"></a>BSP_init</STRONG> (Thumb, 100 bytes, Stack size 8 bytes, bsp.o(.text.BSP_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = BSP_init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_init
+<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Clock_init
+</UL>
+<BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[9f]"></a>BSP_ledBlueOff</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledBlueOff))
-<BR><BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_blinky2
+<P><STRONG><a name="[9f]"></a>BSP_ledGreenOff</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledGreenOff))
+<BR><BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_LEDHeartbeat
 </UL>
 
-<P><STRONG><a name="[9e]"></a>BSP_ledBlueOn</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledBlueOn))
-<BR><BR>[Called By]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_blinky2
-</UL>
-
-<P><STRONG><a name="[9d]"></a>BSP_ledGreenOff</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledGreenOff))
-<BR><BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_blinky1
-</UL>
-
-<P><STRONG><a name="[9c]"></a>BSP_ledGreenOn</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledGreenOn))
-<BR><BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_blinky1
-</UL>
-
-<P><STRONG><a name="[a1]"></a>BSP_ledRedOff</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledRedOff))
-<BR><BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_blinky3
-</UL>
-
-<P><STRONG><a name="[a0]"></a>BSP_ledRedOn</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledRedOn))
-<BR><BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_blinky3
+<P><STRONG><a name="[9d]"></a>BSP_ledGreenOn</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledGreenOn))
+<BR><BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_LEDHeartbeat
 </UL>
 
 <P><STRONG><a name="[90]"></a>BSP_tickCtr</STRONG> (Thumb, 24 bytes, Stack size 4 bytes, bsp.o(.text.BSP_tickCtr))
@@ -717,67 +705,71 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_delay
 </UL>
 
-<P><STRONG><a name="[91]"></a>OSThread_start</STRONG> (Thumb, 342 bytes, Stack size 32 bytes, miros.o(.text.OSThread_start))
+<P><STRONG><a name="[92]"></a>Clock_init</STRONG> (Thumb, 70 bytes, Stack size 0 bytes, bsp.o(.text.Clock_init))
+<BR><BR>[Called By]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_init
+</UL>
+
+<P><STRONG><a name="[94]"></a>OSThread_start</STRONG> (Thumb, 342 bytes, Stack size 32 bytes, miros.o(.text.OSThread_start))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = OSThread_start &rArr; Q_onAssert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Q_onAssert
+<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Q_onAssert
 </UL>
 <BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[9b]"></a>OS_init</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, miros.o(.text.OS_init))
+<P><STRONG><a name="[a1]"></a>OS_init</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, miros.o(.text.OS_init))
 <BR><BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[93]"></a>OS_onStartup</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, bsp.o(.text.OS_onStartup))
+<P><STRONG><a name="[96]"></a>OS_onStartup</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, bsp.o(.text.OS_onStartup))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = OS_onStartup &rArr; SystemCoreClockUpdate &rArr; getOscClk
 </UL>
-<BR>[Calls]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemCoreClockUpdate
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SetPriority
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Config
+<BR>[Calls]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemCoreClockUpdate
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SetPriority
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Config
 </UL>
-<BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_run
+<BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_run
 </UL>
 
-<P><STRONG><a name="[97]"></a>OS_run</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, miros.o(.text.OS_run))
+<P><STRONG><a name="[9a]"></a>OS_run</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, miros.o(.text.OS_run))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = OS_run &rArr; OS_onStartup &rArr; SystemCoreClockUpdate &rArr; getOscClk
 </UL>
-<BR>[Calls]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Q_onAssert
-<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_onStartup
-<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_sched
+<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Q_onAssert
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_onStartup
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_sched
 </UL>
 <BR>[Called By]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[98]"></a>OS_sched</STRONG> (Thumb, 114 bytes, Stack size 0 bytes, miros.o(.text.OS_sched))
+<P><STRONG><a name="[9b]"></a>OS_sched</STRONG> (Thumb, 114 bytes, Stack size 0 bytes, miros.o(.text.OS_sched))
 <BR><BR>[Called By]<UL><LI><a href="#[a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Handler
-<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_run
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_run
 </UL>
 
 <P><STRONG><a name="[9]"></a>PendSV_Handler</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, miros.o(.text.PendSV_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123gh6pm.o(RESET)
 </UL>
-<P><STRONG><a name="[92]"></a>Q_onAssert</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, bsp.o(.text.Q_onAssert))
+<P><STRONG><a name="[95]"></a>Q_onAssert</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, bsp.o(.text.Q_onAssert))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Q_onAssert
 </UL>
 <BR>[Called By]<UL><LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
-<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_run
-<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OSThread_start
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_run
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OSThread_start
 </UL>
 
 <P><STRONG><a name="[a]"></a>SysTick_Handler</STRONG> (Thumb, 50 bytes, Stack size 16 bytes, bsp.o(.text.SysTick_Handler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = SysTick_Handler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_sched
+<BR>[Calls]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_sched
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123gh6pm.o(RESET)
 </UL>
-<P><STRONG><a name="[94]"></a>SystemCoreClockUpdate</STRONG> (Thumb, 326 bytes, Stack size 16 bytes, system_tm4c123gh6pm.o(.text.SystemCoreClockUpdate))
+<P><STRONG><a name="[97]"></a>SystemCoreClockUpdate</STRONG> (Thumb, 326 bytes, Stack size 16 bytes, system_tm4c123gh6pm.o(.text.SystemCoreClockUpdate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = SystemCoreClockUpdate &rArr; getOscClk
 </UL>
-<BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getOscClk
+<BR>[Calls]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getOscClk
 </UL>
-<BR>[Called By]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_onStartup
+<BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_onStartup
 </UL>
 
 <P><STRONG><a name="[77]"></a>SystemInit</STRONG> (Thumb, 252 bytes, Stack size 4 bytes, system_tm4c123gh6pm.o(.text.SystemInit))
@@ -785,75 +777,88 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123gh6pm.o(.text)
 </UL>
+<P><STRONG><a name="[7b]"></a>Task_ControlLoop</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, main.o(.text.Task_ControlLoop))
+<BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
+</UL>
+<P><STRONG><a name="[7a]"></a>Task_LEDHeartbeat</STRONG> (Thumb, 52 bytes, Stack size 8 bytes, main.o(.text.Task_LEDHeartbeat))
+<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = Task_LEDHeartbeat &rArr; BSP_delay &rArr; BSP_tickCtr
+</UL>
+<BR>[Calls]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledGreenOff
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_delay
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_Transmit_string
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledGreenOn
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
+</UL>
+<P><STRONG><a name="[7c]"></a>Task_SensorUpdate</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, main.o(.text.Task_SensorUpdate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = Task_SensorUpdate &rArr; UART5_Transmit_string &rArr; Tiva_UART5_Transmitter_polling
+</UL>
+<BR>[Calls]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_Transmit_string
+</UL>
+<BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
+</UL>
+<P><STRONG><a name="[a0]"></a>Tiva_UART5_Transmitter_polling</STRONG> (Thumb, 46 bytes, Stack size 4 bytes, uart.o(.text.Tiva_UART5_Transmitter_polling))
+<BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = Tiva_UART5_Transmitter_polling
+</UL>
+<BR>[Called By]<UL><LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART5_Transmit_string
+</UL>
+
+<P><STRONG><a name="[9e]"></a>UART5_Transmit_string</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, uart.o(.text.UART5_Transmit_string))
+<BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = UART5_Transmit_string &rArr; Tiva_UART5_Transmitter_polling
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tiva_UART5_Transmitter_polling
+</UL>
+<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_SensorUpdate
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_LEDHeartbeat
+</UL>
+
 <P><STRONG><a name="[79]"></a>assert_failed</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, bsp.o(.text.assert_failed))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = assert_failed &rArr; Q_onAssert
 </UL>
-<BR>[Calls]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Q_onAssert
+<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Q_onAssert
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123gh6pm.o(.text)
 </UL>
 <P><STRONG><a name="[86]"></a>main</STRONG> (Thumb, 114 bytes, Stack size 16 bytes, main.o(.text.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 68<LI>Call Chain = main &rArr; OS_run &rArr; OS_onStartup &rArr; SystemCoreClockUpdate &rArr; getOscClk
 </UL>
-<BR>[Calls]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_run
-<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OSThread_start
-<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_init
-<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_init
+<BR>[Calls]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_run
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OSThread_start
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_init
+<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[7a]"></a>main_blinky1</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, main.o(.text.main_blinky1))
-<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = main_blinky1 &rArr; BSP_delay &rArr; BSP_tickCtr
+<P><STRONG><a name="[93]"></a>uart_init</STRONG> (Thumb, 186 bytes, Stack size 0 bytes, uart.o(.text.uart_init))
+<BR><BR>[Called By]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledGreenOff
-<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_delay
-<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledGreenOn
-</UL>
-<BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
-</UL>
-<P><STRONG><a name="[7b]"></a>main_blinky2</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, main.o(.text.main_blinky2))
-<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = main_blinky2 &rArr; BSP_delay &rArr; BSP_tickCtr
-</UL>
-<BR>[Calls]<UL><LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledBlueOff
-<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledBlueOn
-<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_delay
-</UL>
-<BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
-</UL>
-<P><STRONG><a name="[7c]"></a>main_blinky3</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, main.o(.text.main_blinky3))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = main_blinky3
-</UL>
-<BR>[Calls]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledRedOff
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledRedOn
-</UL>
-<BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
-</UL><P>
+<P>
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[95]"></a>SysTick_Config</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, bsp.o(.text.SysTick_Config))
+<P><STRONG><a name="[98]"></a>SysTick_Config</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, bsp.o(.text.SysTick_Config))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = SysTick_Config &rArr; __NVIC_SetPriority
 </UL>
-<BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SetPriority
+<BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__NVIC_SetPriority
 </UL>
-<BR>[Called By]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_onStartup
+<BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_onStartup
 </UL>
 
-<P><STRONG><a name="[96]"></a>__NVIC_SetPriority</STRONG> (Thumb, 66 bytes, Stack size 8 bytes, bsp.o(.text.__NVIC_SetPriority))
+<P><STRONG><a name="[99]"></a>__NVIC_SetPriority</STRONG> (Thumb, 66 bytes, Stack size 8 bytes, bsp.o(.text.__NVIC_SetPriority))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __NVIC_SetPriority
 </UL>
-<BR>[Called By]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_onStartup
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Config
+<BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_onStartup
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Config
 </UL>
 
 <P><STRONG><a name="[6]"></a>Default_Handler</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, startup_tm4c123gh6pm.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123gh6pm.o(RESET)
 </UL>
-<P><STRONG><a name="[99]"></a>getOscClk</STRONG> (Thumb, 360 bytes, Stack size 20 bytes, system_tm4c123gh6pm.o(.text.getOscClk))
+<P><STRONG><a name="[9c]"></a>getOscClk</STRONG> (Thumb, 360 bytes, Stack size 20 bytes, system_tm4c123gh6pm.o(.text.getOscClk))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = getOscClk
 </UL>
-<BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemCoreClockUpdate
+<BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemCoreClockUpdate
 </UL>
 <P>
 <H3>

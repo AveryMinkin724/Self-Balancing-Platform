@@ -5,6 +5,7 @@
 #include "miros.h"
 #include "qassert.h"
 #include "TM4C123GH6PM.h" /* the TM4C MCU Peripheral Access Layer (TI) */
+#include "uart.h"
 
 /* on-board LEDs */
 #define LED_RED   (1U << 1)
@@ -26,12 +27,36 @@ void SysTick_Handler(void) {
     GPIOF_AHB->DATA_Bits[TEST_PIN] = 0U;
 }
 
+void Clock_init(void) {
+		/* Force Config Clock 16MHz*/
+		SYSCTL_RCC2_R |= SYSCTL_RCC2_USERCC2;      // Use RCC2
+		SYSCTL_RCC2_R |= SYSCTL_RCC2_BYPASS2;      // Bypass PLL while configuring
+		SYSCTL_RCC_R &= ~SYSCTL_RCC_USESYSDIV;     // No system clock divider
+		SYSCTL_RCC_R &= ~SYSCTL_RCC_XTAL_M;        // Clear XTAL field
+		SYSCTL_RCC_R |= SYSCTL_RCC_XTAL_16MHZ;     // Set crystal value to 16MHz
+		SYSCTL_RCC2_R &= ~SYSCTL_RCC2_OSCSRC2_M;   // Clear oscillator source
+		SYSCTL_RCC2_R |= SYSCTL_RCC2_OSCSRC2_MO;   // Use Main Oscillator
+}
+
 void BSP_init(void) {
-    SYSCTL->GPIOHBCTL |= (1U << 5); /* enable AHB for GPIOF */
+		
+		/* Configure Clock since some part of the startup seems to select clock that is not 16MHz (system_TM4C123GH6PM.c?) */
+		Clock_init();
+    
+		SYSCTL->GPIOHBCTL |= (1U << 5); /* enable AHB for GPIOF */
     SYSCTL->RCGCGPIO  |= (1U << 5); /* enable Run Mode for GPIOF */
 
     GPIOF_AHB->DIR |= (LED_RED | LED_BLUE | LED_GREEN | TEST_PIN);
     GPIOF_AHB->DEN |= (LED_RED | LED_BLUE | LED_GREEN | TEST_PIN);
+		
+		/* For UART */
+	
+		//stop watchdog timer
+		SYSCTL_RCGCWD_R &= ~(1U << 0); // Disable WDT0 clock
+		SYSCTL_RCGCWD_R &= ~(1U << 1); // Disable WDT1 clock
+
+		//Initialize UART (section 14.4 datasheet)
+		uart_init();
 
 }
 

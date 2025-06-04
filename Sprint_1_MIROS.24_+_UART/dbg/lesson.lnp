@@ -1,6 +1,7 @@
 --cpu=Cortex-M4 --fpu=SoftVFP
 ".\dbg\main.o"
 ".\dbg\bsp.o"
+".\dbg\uart.o"
 ".\dbg\startup_tm4c123gh6pm.o"
 ".\dbg\system_tm4c123gh6pm.o"
 ".\dbg\miros.o"
