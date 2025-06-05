@@ -1,3 +1,41 @@
+# Sprint 1
+
+Implemented:
+- Combined MIROS.24 with UART Driver
+- Currently 4 threads:
+  - Task_LEDHeartbeat: Keeps a green LED blinking to indicate system alive
+    - prints to UART when LED turns off/on
+  - Task_ControlLoop: Placeholder for balance control logic (PID, etc.)
+  - Task_SensorUpdate: Placeholder for IMU sampling & filtering
+    - prints values to UART @ selected polling speed
+  - Task_Logger: Continuously reads logBuffer (circular buffer) for characters to send over UART 1 by 1. Calls " Tiva_UART5_Transmitter_polling() ". This is so UART print is a nonblocking tasks so time sensitive tasks can execute while strings are being printed to putty terminal.
+
+Future Implementation/Rework:
+- Use Quantum Leaps QP/C RTOS Framework to implement objects for tasks
+
+
+✅ Sprint 1 Completion Checklist
+Here’s a standard checklist based on what you’ve said you wanted for Sprint 1:
+
+1. RTOS Core Functionality
+ - Implemented OSThread and OS_sched() for cooperative scheduling.
+ - Created and started multiple threads (LEDHeartbeat, SensorUpdate, ControlLoop).
+ - Verified basic round-robin scheduling and thread isolation.
+
+2. UART Logging
+ - Initialized UART5.
+ - Implemented polling-based transmit/receive.
+ - Refactored blocking UART logging into a dedicated logger task with a ring buffer.
+
+3. Integration
+ - Logging works across multiple threads.
+ - No major thread starvation or blocking behavior observed.
+
+4. Code Structure & Clarity
+ - Modular source files: main.c, uart.c, miros.c.
+ - No circular dependencies or missing includes.
+ - GitHub repo is updated and readable.
+
 # MIROS.24: A Minimal Real-Time Operating System for ARM Cortex-M
 
 This document provides an in-depth overview of the MIROS.24 project, a minimal real-time operating system (RTOS) tailored for ARM Cortex-M microcontrollers. The system is designed to facilitate understanding of RTOS fundamentals, including thread management, context switching, and scheduling.
