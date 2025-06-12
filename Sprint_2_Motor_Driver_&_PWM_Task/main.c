@@ -3,6 +3,7 @@
 #include "bsp.h"
 #include "uart.h"
 #include "logger.h"
+#include "motor.h"
 
 uint32_t stack_LEDHeartbeat[40]; //initialize array for stack, this will automatically be assigned to area of RAM
 OSThread LEDHeartbeat;
@@ -45,7 +46,7 @@ int main(void) {
 		OS_init();
     
 		/* start UART Logging thread */
-    Logger_init(); 
+    logger_start(); 
 	
 		/* fabricate Cortex-M ISR stack frame for LEDHeartbeat */
 		OSThread_start(&LEDHeartbeat,
@@ -62,6 +63,9 @@ int main(void) {
                    &Task_SensorUpdate,
                    stack_SensorUpdate, sizeof(stack_SensorUpdate));
 	
+		/* start PWM thread */
+		motor_start();
+		
 		/* transfer control to the RTOS to run the threads */
     OS_run();
 		

@@ -12,7 +12,7 @@ static volatile uint16_t tail = 0;
 uint32_t stack_Logger[80];
 OSThread LoggerThread;
 
-void Logger_init(void) {
+void logger_start(void) {
     OSThread_start(&LoggerThread,
                    &Task_Logger,
                    stack_Logger, sizeof(stack_Logger));

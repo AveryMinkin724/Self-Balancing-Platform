@@ -6,6 +6,7 @@
 #include "qassert.h"
 #include "TM4C123GH6PM.h" /* the TM4C MCU Peripheral Access Layer (TI) */
 #include "uart.h"
+#include "motor.h"
 
 /* on-board LEDs */
 #define LED_RED   (1U << 1)
@@ -43,6 +44,8 @@ void BSP_init(void) {
 		/* Configure Clock since some part of the startup seems to select clock that is not 16MHz (system_TM4C123GH6PM.c?) */
 		Clock_init();
     
+		/* For LEDs */
+	
 		SYSCTL->GPIOHBCTL |= (1U << 5); /* enable AHB for GPIOF */
     SYSCTL->RCGCGPIO  |= (1U << 5); /* enable Run Mode for GPIOF */
 
@@ -57,7 +60,10 @@ void BSP_init(void) {
 
 		//Initialize UART (section 14.4 datasheet)
 		uart_init();
-
+	
+		/* For Motor Driver */
+		motor_init();
+		
 }
 
 uint32_t BSP_tickCtr(void) {

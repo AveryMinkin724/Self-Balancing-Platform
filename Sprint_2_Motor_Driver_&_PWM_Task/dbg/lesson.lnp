@@ -3,6 +3,7 @@
 ".\dbg\bsp.o"
 ".\dbg\uart.o"
 ".\dbg\logger.o"
+".\dbg\motor.o"
 ".\dbg\startup_tm4c123gh6pm.o"
 ".\dbg\system_tm4c123gh6pm.o"
 ".\dbg\miros.o"
