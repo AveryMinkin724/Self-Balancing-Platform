@@ -3,9 +3,12 @@
 #define MPU6050_ADDR 0x68
 #define MPU6050_PWR_MGMT_1 0x6B
 #define WHO_AM_I 0x75
+#define ACCEL_SCALE (1.0f / 16384.0f) // g per LSB
+#define GYRO_SCALE  (1.0f / 131.0f)   // °/s per LSB
 
-uint32_t stack_imu[128U];
+uint32_t stack_imu[256U];
 OSThread imuThread;
+Bias imu_bias = {0};  // Global variable, accessible throughout imu.c
 
 void imu_start(void) {
 		OSThread_start(&imuThread,
@@ -101,6 +104,51 @@ int16_t MPU6050_ReadWord(uint8_t reg_addr) {
 uint8_t MPU6050_WhoAmI(void) {
 		return I2C0_ReadByte(MPU6050_ADDR, WHO_AM_I);
 }
+void MPU6050_Calibrate(void) {
+		int32_t ax_sum = 0, ay_sum = 0, az_sum = 0;
+		int32_t gx_sum = 0, gy_sum = 0, gz_sum = 0;
+	
+		BSP_ledBlueOn();
+		for(int i = 0; i < 100; ++i) {
+				//Read Gyro & Accel data 
+				int16_t ax = MPU6050_ReadWord(0x3B);  // ACCEL_XOUT_H
+				int16_t ay = MPU6050_ReadWord(0x3D);
+				int16_t az = MPU6050_ReadWord(0x3F);
+				int16_t gx = MPU6050_ReadWord(0x43);  // GYRO_XOUT_H
+				int16_t gy = MPU6050_ReadWord(0x45);
+				int16_t gz = MPU6050_ReadWord(0x47);
+				
+				ax_sum += ax;
+				ay_sum += ay;
+				az_sum += az;
+				gx_sum += gx;
+				gy_sum += gy;
+				gz_sum += gz;
+				
+				char buf[128];
+				snprintf(buf, sizeof(buf),
+						"ACC[X:%d Y:%d Z:%d] GYRO[X:%d Y:%d Z:%d]\r\n",
+						ax, ay, az, gx, gy, gz);
+				Logger_log(buf);
+				
+				BSP_delay(BSP_TICKS_PER_SEC / 2U);  // 5 Hz logging rate
+		}
+		
+		imu_bias.ax = ax_sum / 100;
+		imu_bias.ay = ay_sum / 100;
+		imu_bias.az = az_sum / 100;
+		imu_bias.gx = gx_sum / 100;
+		imu_bias.gy = gy_sum / 100;
+		imu_bias.gz = gz_sum / 100;
+		Logger_log("Calibration Complete\r\n");
+		char buf[128];
+		snprintf(buf, sizeof(buf),
+			"Bias Values: ACC[X:%d Y:%d Z:%d] GYRO[X:%d Y:%d Z:%d]\r\n",
+				imu_bias.ax, imu_bias.ay, imu_bias.az, imu_bias.gx, imu_bias.gy, imu_bias.gz);
+		Logger_log(buf);
+		
+		BSP_ledBlueOff();
+}
 
 void MPU6050_Init(void) {
     //Write 0x01 to power mgmt reg
@@ -109,9 +157,13 @@ void MPU6050_Init(void) {
 		// Read back
 		uint8_t val = I2C0_ReadByte(MPU6050_ADDR, MPU6050_PWR_MGMT_1);
 		Logger_log_hex("PWR_MGMT_1", val);
+				
 }
 
 void Task_imu(void) {
+		
+		MPU6050_Calibrate();
+	
 		while (1) {
 				/* Check MPU6050 ID */
 				//uint8_t id = MPU6050_WhoAmI();
@@ -126,11 +178,19 @@ void Task_imu(void) {
         int16_t gx = MPU6050_ReadWord(0x43);  // GYRO_XOUT_H
         int16_t gy = MPU6050_ReadWord(0x45);
         int16_t gz = MPU6050_ReadWord(0x47);
+				
+				float ax_g = (ax - imu_bias.ax) * ACCEL_SCALE;
+				float ay_g = (ay - imu_bias.ay) * ACCEL_SCALE;
+				float az_g = (az - imu_bias.az) * ACCEL_SCALE;
 
+				float gx_dps = (gx - imu_bias.gx) * GYRO_SCALE;
+				float gy_dps = (gy - imu_bias.gy) * GYRO_SCALE;
+				float gz_dps = (gz - imu_bias.gz) * GYRO_SCALE;
+				
         char buf[128];
         snprintf(buf, sizeof(buf),
-            "ACC[X:%d Y:%d Z:%d] GYRO[X:%d Y:%d Z:%d]\r\n",
-            ax, ay, az, gx, gy, gz);
+            "ACC[X:%f Y:%f Z:%f] GYRO[X:%f Y:%f Z:%f]\r\n",
+            ax_g, ay_g, az_g, gx_dps, gy_dps, gz_dps);
         Logger_log(buf);
 				
 				BSP_delay(BSP_TICKS_PER_SEC / 2U);  // 5 Hz logging rate
