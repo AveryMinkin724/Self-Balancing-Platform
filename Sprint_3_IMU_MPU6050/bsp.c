@@ -23,7 +23,7 @@ void SysTick_Handler(void) {
     ++l_tickCtr;
 
     __disable_irq();
-    OS_sched();
+    OS_sched();					//this is critical for making RTOS preemptive so tasks can run concurrently
     __enable_irq();
 
     GPIOF_AHB->DATA_Bits[TEST_PIN] = 0U;

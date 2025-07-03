@@ -9,6 +9,8 @@
 uint32_t stack_imu[256U];
 OSThread imuThread;
 Bias imu_bias = {0};  // Global variable, accessible throughout imu.c
+// Global filtered angle
+static float pitch = 0.0f;
 
 void imu_start(void) {
 		OSThread_start(&imuThread,
@@ -160,17 +162,47 @@ void MPU6050_Init(void) {
 				
 }
 
+void Complementary_Filter (void) {
+		
+		//Read Gyro & Accel data 
+		int16_t ax = MPU6050_ReadWord(0x3B);  // ACCEL_XOUT_H
+		int16_t ay = MPU6050_ReadWord(0x3D);
+		int16_t az = MPU6050_ReadWord(0x3F);
+		int16_t gx = MPU6050_ReadWord(0x43);  // GYRO_XOUT_H
+		int16_t gy = MPU6050_ReadWord(0x45);
+		int16_t gz = MPU6050_ReadWord(0x47);
+		
+		float ax_g = (ax - imu_bias.ax) * ACCEL_SCALE;
+		float ay_g = (ay - imu_bias.ay) * ACCEL_SCALE;
+		float az_g = (az - imu_bias.az) * ACCEL_SCALE;
+
+		float gyro_rate = (gx - imu_bias.gx) * GYRO_SCALE;
+		float gy_dps = (gy - imu_bias.gy) * GYRO_SCALE;
+		float gz_dps = (gz - imu_bias.gz) * GYRO_SCALE;
+		
+		float accel_angle = atan2f(ax, az) * 180.0f / M_PI;  // degrees
+		
+		pitch = 0.90f * (pitch + gyro_rate * 0.01f) + 0.1f * accel_angle;
+		
+		char buf[128];
+		snprintf(buf, sizeof(buf),
+				"Pitch: %.2f\r\n", pitch);
+		Logger_log(buf);
+		
+		BSP_delay(BSP_TICKS_PER_SEC / 100U);
+}
 void Task_imu(void) {
 		
 		MPU6050_Calibrate();
-	
+		
 		while (1) {
 				/* Check MPU6050 ID */
 				//uint8_t id = MPU6050_WhoAmI();
 				//Logger_log_hex("MPU6050 WHO_AM_I", id);
 				//BSP_delay(BSP_TICKS_PER_SEC * 10U);// wait some time... 
 				
-				
+				Complementary_Filter();
+				/*
 				//Read Gyro & Accel data 
 				int16_t ax = MPU6050_ReadWord(0x3B);  // ACCEL_XOUT_H
         int16_t ay = MPU6050_ReadWord(0x3D);
@@ -193,7 +225,7 @@ void Task_imu(void) {
             ax_g, ay_g, az_g, gx_dps, gy_dps, gz_dps);
         Logger_log(buf);
 				
-				BSP_delay(BSP_TICKS_PER_SEC / 2U);  // 5 Hz logging rate
-				
+				BSP_delay(BSP_TICKS_PER_SEC / 5U);  // 5 Hz logging rate
+				*/
 		}
 }
