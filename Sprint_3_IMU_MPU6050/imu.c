@@ -9,8 +9,8 @@
 uint32_t stack_imu[256U];
 OSThread imuThread;
 Bias imu_bias = {0};  // Global variable, accessible throughout imu.c
-// Global filtered angle
-static float pitch = 0.0f;
+static float pitch = 0.0f; // Global filtered angle
+float dt = 0.01f;
 
 void imu_start(void) {
 		OSThread_start(&imuThread,
@@ -20,6 +20,7 @@ void imu_start(void) {
 
 void imu_init(void) {
 		
+	
 	  /* I2C Initialization */
 		// 1. Enable clocks
     SYSCTL_RCGCI2C_R |= 0x01;     // Enable clock to I2C0
@@ -162,7 +163,7 @@ void MPU6050_Init(void) {
 				
 }
 
-void Complementary_Filter (void) {
+float Complementary_Filter (void) {
 		
 		//Read Gyro & Accel data 
 		int16_t ax = MPU6050_ReadWord(0x3B);  // ACCEL_XOUT_H
@@ -184,13 +185,18 @@ void Complementary_Filter (void) {
 		
 		pitch = 0.90f * (pitch + gyro_rate * 0.01f) + 0.1f * accel_angle;
 		
+		/*
 		char buf[128];
 		snprintf(buf, sizeof(buf),
 				"Pitch: %.2f\r\n", pitch);
 		Logger_log(buf);
+		*/
 		
-		BSP_delay(BSP_TICKS_PER_SEC / 100U);
+		return pitch;
+		
 }
+
+
 void Task_imu(void) {
 		
 		MPU6050_Calibrate();
@@ -199,33 +205,12 @@ void Task_imu(void) {
 				/* Check MPU6050 ID */
 				//uint8_t id = MPU6050_WhoAmI();
 				//Logger_log_hex("MPU6050 WHO_AM_I", id);
-				//BSP_delay(BSP_TICKS_PER_SEC * 10U);// wait some time... 
+				//BSP_delay(BSP_TICKS_PER_SEC * 10U);// wait some time...
+			
+				float current_pitch = Complementary_Filter();
+				float output = PID_update(current_pitch, dt, Kp, Ki, Kd);
 				
-				Complementary_Filter();
-				/*
-				//Read Gyro & Accel data 
-				int16_t ax = MPU6050_ReadWord(0x3B);  // ACCEL_XOUT_H
-        int16_t ay = MPU6050_ReadWord(0x3D);
-        int16_t az = MPU6050_ReadWord(0x3F);
-        int16_t gx = MPU6050_ReadWord(0x43);  // GYRO_XOUT_H
-        int16_t gy = MPU6050_ReadWord(0x45);
-        int16_t gz = MPU6050_ReadWord(0x47);
 				
-				float ax_g = (ax - imu_bias.ax) * ACCEL_SCALE;
-				float ay_g = (ay - imu_bias.ay) * ACCEL_SCALE;
-				float az_g = (az - imu_bias.az) * ACCEL_SCALE;
-
-				float gx_dps = (gx - imu_bias.gx) * GYRO_SCALE;
-				float gy_dps = (gy - imu_bias.gy) * GYRO_SCALE;
-				float gz_dps = (gz - imu_bias.gz) * GYRO_SCALE;
-				
-        char buf[128];
-        snprintf(buf, sizeof(buf),
-            "ACC[X:%f Y:%f Z:%f] GYRO[X:%f Y:%f Z:%f]\r\n",
-            ax_g, ay_g, az_g, gx_dps, gy_dps, gz_dps);
-        Logger_log(buf);
-				
-				BSP_delay(BSP_TICKS_PER_SEC / 5U);  // 5 Hz logging rate
-				*/
+				BSP_delay(1); // 10 ms : BSP_TICKS_PER_SEC = 100, systick fires every 10 ms, argument of 1 into BSP delay() simply delays 1 tick which is 10 ms, 2 = 20 ms, 3 30ms ... 100 = 1 sec
 		}
 }
