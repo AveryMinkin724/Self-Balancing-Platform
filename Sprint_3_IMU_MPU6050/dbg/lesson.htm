@@ -3,11 +3,11 @@
 <title>Static Call Graph - [.\dbg\lesson.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\dbg\lesson.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Fri Jul 11 14:36:13 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6220000: Last Updated: Mon Jul 14 00:50:06 2025
 <BR><P>
-<H3>Maximum Stack Usage =        504 bytes + Unknown(Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        496 bytes + Unknown(Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-Task_imu &rArr; PID_update &rArr; snprintf &rArr; _printf_char_common &rArr; __printf
+Task_imu &rArr; MPU6050_Calibrate &rArr; snprintf &rArr; _printf_char_common &rArr; __printf
 <P>
 <H3>
 Function Pointers
@@ -808,8 +808,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_common
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_update
-<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Calibrate
+<BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Calibrate
+<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_motor
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Logger_log_hex
 </UL>
 
@@ -1209,11 +1209,11 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Calibrate
 </UL>
 
-<P><STRONG><a name="[ff]"></a>BSP_ledGreenOff</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledGreenOff))
+<P><STRONG><a name="[fe]"></a>BSP_ledGreenOff</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledGreenOff))
 <BR><BR>[Called By]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_LEDHeartbeat
 </UL>
 
-<P><STRONG><a name="[fe]"></a>BSP_ledGreenOn</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledGreenOn))
+<P><STRONG><a name="[fd]"></a>BSP_ledGreenOn</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, bsp.o(.text.BSP_ledGreenOn))
 <BR><BR>[Called By]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_LEDHeartbeat
 </UL>
 
@@ -1267,8 +1267,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = Logger_log
 </UL>
 <BR>[Called By]<UL><LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2C0_WriteByte
-<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_update
 <LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MPU6050_Calibrate
+<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_motor
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Logger_log_hex
 </UL>
 
@@ -1356,17 +1356,13 @@ Global Symbols
 <LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_run
 </UL>
 
-<P><STRONG><a name="[fa]"></a>PID_update</STRONG> (Thumb, 258 bytes, Stack size 344 bytes, pid.o(.text.PID_update))
-<BR><BR>[Stack]<UL><LI>Max Depth = 480 + Unknown Stack Size
-<LI>Call Chain = PID_update &rArr; snprintf &rArr; _printf_char_common &rArr; __printf
+<P><STRONG><a name="[fa]"></a>PID_update</STRONG> (Thumb, 190 bytes, Stack size 64 bytes, pid.o(.text.PID_update))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = PID_update &rArr; __aeabi_fmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
 <LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
 <LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
-<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;snprintf
-<LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Logger_log
 </UL>
 <BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_imu
 </UL>
@@ -1392,7 +1388,7 @@ Global Symbols
 <P><STRONG><a name="[f5]"></a>SystemCoreClockUpdate</STRONG> (Thumb, 326 bytes, Stack size 16 bytes, system_tm4c123gh6pm.o(.text.SystemCoreClockUpdate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = SystemCoreClockUpdate &rArr; getOscClk
 </UL>
-<BR>[Calls]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getOscClk
+<BR>[Calls]<UL><LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;getOscClk
 </UL>
 <BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OS_onStartup
 </UL>
@@ -1408,22 +1404,22 @@ Global Symbols
 <P><STRONG><a name="[7f]"></a>Task_LEDHeartbeat</STRONG> (Thumb, 28 bytes, Stack size 8 bytes, main.o(.text.Task_LEDHeartbeat))
 <BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = Task_LEDHeartbeat &rArr; BSP_delay &rArr; BSP_tickCtr
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledGreenOff
+<BR>[Calls]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledGreenOff
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_delay
-<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledGreenOn
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_ledGreenOn
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text.main)
 </UL>
 <P><STRONG><a name="[7e]"></a>Task_Logger</STRONG> (Thumb, 74 bytes, Stack size 16 bytes, logger.o(.text.Task_Logger))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = Task_Logger &rArr; Tiva_UART5_Transmitter_polling
 </UL>
-<BR>[Calls]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tiva_UART5_Transmitter_polling
+<BR>[Calls]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Tiva_UART5_Transmitter_polling
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> logger.o(.text.logger_start)
 </UL>
-<P><STRONG><a name="[7d]"></a>Task_imu</STRONG> (Thumb, 80 bytes, Stack size 24 bytes, imu.o(.text.Task_imu))
-<BR><BR>[Stack]<UL><LI>Max Depth = 504 + Unknown Stack Size
-<LI>Call Chain = Task_imu &rArr; PID_update &rArr; snprintf &rArr; _printf_char_common &rArr; __printf
+<P><STRONG><a name="[7d]"></a>Task_imu</STRONG> (Thumb, 88 bytes, Stack size 16 bytes, imu.o(.text.Task_imu))
+<BR><BR>[Stack]<UL><LI>Max Depth = 496 + Unknown Stack Size
+<LI>Call Chain = Task_imu &rArr; MPU6050_Calibrate &rArr; snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_update
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Complementary_Filter
@@ -1432,19 +1428,23 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> imu.o(.text.imu_start)
 </UL>
-<P><STRONG><a name="[81]"></a>Task_motor</STRONG> (Thumb, 116 bytes, Stack size 16 bytes, motor.o(.text.Task_motor))
-<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = Task_motor &rArr; clamp &rArr; __aeabi_fcmple
+<P><STRONG><a name="[81]"></a>Task_motor</STRONG> (Thumb, 162 bytes, Stack size 88 bytes, motor.o(.text.Task_motor))
+<BR><BR>[Stack]<UL><LI>Max Depth = 224 + Unknown Stack Size
+<LI>Call Chain = Task_motor &rArr; snprintf &rArr; _printf_char_common &rArr; __printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2iz
-<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
-<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pwm_set_duty_cycle
-<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp
-<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_motor_direction
+<BR>[Calls]<UL><LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2iz
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;snprintf
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pwm_set_duty_cycle
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp
+<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;set_motor_direction
+<LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Logger_log
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BSP_delay
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> motor.o(.text.motor_start)
 </UL>
-<P><STRONG><a name="[100]"></a>Tiva_UART5_Transmitter_polling</STRONG> (Thumb, 46 bytes, Stack size 4 bytes, uart.o(.text.Tiva_UART5_Transmitter_polling))
+<P><STRONG><a name="[ff]"></a>Tiva_UART5_Transmitter_polling</STRONG> (Thumb, 46 bytes, Stack size 4 bytes, uart.o(.text.Tiva_UART5_Transmitter_polling))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = Tiva_UART5_Transmitter_polling
 </UL>
 <BR>[Called By]<UL><LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_Logger
@@ -1457,10 +1457,10 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123gh6pm.o(.text)
 </UL>
-<P><STRONG><a name="[103]"></a>clamp</STRONG> (Thumb, 58 bytes, Stack size 24 bytes, motor.o(.text.clamp))
+<P><STRONG><a name="[102]"></a>clamp</STRONG> (Thumb, 58 bytes, Stack size 24 bytes, motor.o(.text.clamp))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = clamp &rArr; __aeabi_fcmple
 </UL>
-<BR>[Calls]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
+<BR>[Calls]<UL><LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmple
 <LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fcmpge
 </UL>
 <BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_motor
@@ -1520,13 +1520,13 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[105]"></a>pwm_set_duty_cycle</STRONG> (Thumb, 82 bytes, Stack size 12 bytes, motor.o(.text.pwm_set_duty_cycle))
+<P><STRONG><a name="[104]"></a>pwm_set_duty_cycle</STRONG> (Thumb, 82 bytes, Stack size 12 bytes, motor.o(.text.pwm_set_duty_cycle))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = pwm_set_duty_cycle
 </UL>
 <BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_motor
 </UL>
 
-<P><STRONG><a name="[102]"></a>set_motor_direction</STRONG> (Thumb, 70 bytes, Stack size 4 bytes, motor.o(.text.set_motor_direction))
+<P><STRONG><a name="[101]"></a>set_motor_direction</STRONG> (Thumb, 70 bytes, Stack size 4 bytes, motor.o(.text.set_motor_direction))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = set_motor_direction
 </UL>
 <BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_motor
@@ -1655,10 +1655,10 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_f2d
 </UL>
 
-<P><STRONG><a name="[fc]"></a>__aeabi_f2d</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d))
+<P><STRONG><a name="[105]"></a>__aeabi_f2d</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_f2d
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PID_update
+<BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_motor
 </UL>
 
 <P><STRONG><a name="[116]"></a>_f2d</STRONG> (Thumb, 86 bytes, Stack size 16 bytes, f2d.o(x$fpl$f2d), UNUSED)
@@ -1706,17 +1706,17 @@ Global Symbols
 <P><STRONG><a name="[106]"></a>__aeabi_fcmpge</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, fcmp.o(x$fpl$fcmp))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_fcmpge
 </UL>
-<BR>[Called By]<UL><LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp
+<BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp
 </UL>
 
 <P><STRONG><a name="[123]"></a>_fgeq</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, fcmp.o(x$fpl$fcmp), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fcmpge
 </UL>
 
-<P><STRONG><a name="[101]"></a>__aeabi_fcmple</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, fcmp.o(x$fpl$fcmp))
+<P><STRONG><a name="[100]"></a>__aeabi_fcmple</STRONG> (Thumb, 0 bytes, Stack size 8 bytes, fcmp.o(x$fpl$fcmp))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = __aeabi_fcmple
 </UL>
-<BR>[Called By]<UL><LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp
+<BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;clamp
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_motor
 </UL>
 
@@ -1759,7 +1759,7 @@ Global Symbols
 <LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_feq
 </UL>
 
-<P><STRONG><a name="[104]"></a>__aeabi_f2iz</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, ffix.o(x$fpl$ffix))
+<P><STRONG><a name="[103]"></a>__aeabi_f2iz</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, ffix.o(x$fpl$ffix))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_f2iz
 </UL>
 <BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Task_motor
@@ -1902,7 +1902,7 @@ Local Symbols
 <P><STRONG><a name="[6]"></a>Default_Handler</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, startup_tm4c123gh6pm.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123gh6pm.o(RESET)
 </UL>
-<P><STRONG><a name="[fd]"></a>getOscClk</STRONG> (Thumb, 360 bytes, Stack size 20 bytes, system_tm4c123gh6pm.o(.text.getOscClk))
+<P><STRONG><a name="[fc]"></a>getOscClk</STRONG> (Thumb, 360 bytes, Stack size 20 bytes, system_tm4c123gh6pm.o(.text.getOscClk))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = getOscClk
 </UL>
 <BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemCoreClockUpdate

@@ -3,10 +3,8 @@
 #define DIR_FORWARD 0
 #define DIR_REVERSE 1
 
-uint32_t stack_motor[128U];
+uint32_t stack_motor[256U];
 OSThread motorThread;
-
-extern volatile float output;
 
 void motor_start(void) {
     OSThread_start(&motorThread,
@@ -67,18 +65,18 @@ void Task_motor(void) {
 		while (1) {
 				
 				if (output > 0) {
-						set_motor_direction(DIR_FORWARD);
+						set_motor_direction(DIR_REVERSE);
 						pwm_set_duty_cycle(clamp(output, 0, 100)); // Clamp to 0–100%
 				} else {
-						set_motor_direction(DIR_REVERSE);
+						set_motor_direction(DIR_FORWARD);
 						pwm_set_duty_cycle(clamp(-output, 0, 100));
 				}
-				/*
-				char buf[128];
+				
+				char buf[64];
 				snprintf(buf, sizeof(buf),
 						"Output: %.2f\r\n", output);
 				Logger_log(buf);
-				*/
+				
 				/*		
 				set_motor_direction(DIR_FORWARD);
 				pwm_set_duty_cycle(60); // 60% speed

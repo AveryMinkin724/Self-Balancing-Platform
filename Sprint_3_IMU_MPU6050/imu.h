@@ -30,4 +30,5 @@ typedef struct {
 		int16_t gx, gy, gz;
 } Bias;
 	
+
 #endif // IMU_H

@@ -208,7 +208,7 @@ void Task_imu(void) {
 				//BSP_delay(BSP_TICKS_PER_SEC * 10U);// wait some time...
 			
 				float current_pitch = Complementary_Filter();
-				float output = PID_update(current_pitch, dt, Kp, Ki, Kd);
+				output = PID_update(current_pitch, dt, Kp, Ki, Kd);
 				
 				
 				BSP_delay(1); // 10 ms : BSP_TICKS_PER_SEC = 100, systick fires every 10 ms, argument of 1 into BSP delay() simply delays 1 tick which is 10 ms, 2 = 20 ms, 3 30ms ... 100 = 1 sec
