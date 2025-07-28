@@ -1,6 +1,18 @@
 #include "uart.h"
 #include "tm4c.h"   // changed from t4mc.h to access gpio registers defined in structs rather than the other way
 
+#define UART_MODE_USB 1
+#define UART_MODE_BT  2
+
+#define UART_MODE UART_MODE_BT  // Change this line to switch between USB and BT
+
+/* 115200 Baude rate */
+#define USB_BAUD_I 8  // Baud Rate Divisor 8.680555
+#define USB_BAUD_F 44 // fractional Part: 0.68055*64 +.5 = 44: (44/64) fraction of lower 6 bits
+/* 9600 Baude rate */
+#define BT_BAUD_I 104 // 104.16667 usec
+#define BT_BAUD_F 11 // 0.16667*64 + 0.5 = 11.1668
+
 void uart_init(void)
 {
 		//TODO ASSERT(!Initialized) check if uart_init() has been called yet
@@ -22,11 +34,17 @@ void uart_init(void)
 		UART5_CTL_R &= ~0x01;  
 		//UART Clock Config (baud clock), chose system clock: 16MHz default
 		UART5_CC_R = 0;
-		// for 115200, Baud Rate Divisor 8.680555 (notice these are dedicated registers for the buad rates, you can overwrite what is in these so = suffices
-		//UART5_IBRD_R = 8; //integer part
-		//UART5_FBRD_R = 44; //fractional Part: 0.68055*64 +.5 = 44: (44/64) fractiono of lower 6 bits
-		UART5_IBRD_R = 104; //9600 baude rate: 104.16667 usec
-		UART5_FBRD_R = 11; //0.16667*64 + 0.5 = 11.1668
+		
+		if (UART_MODE == UART_MODE_USB) {
+				UART5_IBRD_R = USB_BAUD_I; 
+				UART5_FBRD_R = USB_BAUD_F; 
+		} else if (UART_MODE == UART_MODE_BT) {
+				UART5_IBRD_R = BT_BAUD_I; 
+				UART5_FBRD_R = BT_BAUD_F;
+		} else {
+				UART5_IBRD_R = 0; 
+				UART5_FBRD_R = 0;
+		}
 		
 		//LCRH : data length 8-bit, not parity bit, no FIFO
 		UART5_LCRH_R = 0x60;

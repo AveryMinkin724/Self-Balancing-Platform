@@ -6,6 +6,8 @@
 #define ACCEL_SCALE (1.0f / 16384.0f) // g per LSB
 #define GYRO_SCALE  (1.0f / 131.0f)   // °/s per LSB
 
+//#define USE_HARDCODED_BIAS
+
 uint32_t stack_imu[256U];
 OSThread imuThread;
 Bias imu_bias = {0};  // Global variable, accessible throughout imu.c
@@ -198,18 +200,34 @@ float Complementary_Filter (void) {
 
 
 void Task_imu(void) {
-		
-		MPU6050_Calibrate();
+		bool calibrated = false;
+	
+		#ifdef USE_HARDCODED_BIAS
+				imu_bias.ax = -104;  // Replace with your averaged log values
+				imu_bias.ay = 108;
+				imu_bias.az = 16232;
+				imu_bias.gx = 120;
+				imu_bias.gy = -88;
+				imu_bias.gz = 36;
+		#else
+				MPU6050_Calibrate();
+		#endif
 		
 		while (1) {
 				/* Check MPU6050 ID */
 				//uint8_t id = MPU6050_WhoAmI();
 				//Logger_log_hex("MPU6050 WHO_AM_I", id);
 				//BSP_delay(BSP_TICKS_PER_SEC * 10U);// wait some time...
+				
+				/*
+				 if (!calibrated || BSP_buttonPressed()) {
+            MPU6050_Calibrate();
+            calibrated = true;
+        }
+				*/
 			
 				float current_pitch = Complementary_Filter();
 				output = PID_update(current_pitch, dt, Kp, Ki, Kd);
-				
 				
 				BSP_delay(1); // 10 ms : BSP_TICKS_PER_SEC = 100, systick fires every 10 ms, argument of 1 into BSP delay() simply delays 1 tick which is 10 ms, 2 = 20 ms, 3 30ms ... 100 = 1 sec
 		}

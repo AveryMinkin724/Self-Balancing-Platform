@@ -42,10 +42,10 @@ int main(void) {
 									 stack_LEDHeartbeat, sizeof(stack_LEDHeartbeat));
 		
 		/* fabricate Cortex-M ISR stack frame for ControlLoop */
-		OSThread_start(&ControlLoop,
+		/*OSThread_start(&ControlLoop,
 									 &Task_ControlLoop,
 									 stack_ControlLoop, sizeof(stack_ControlLoop));
-		
+		*/
 		/* start Motor thread */
 		motor_start();
 		
