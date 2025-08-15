@@ -32,6 +32,10 @@
 #ifndef MIROS_H
 #define MIROS_H
 
+#define QK_ISR_EXIT() do { \
+    OS_sched();             /* call the scheduler */ \
+    __enable_irq();         /* re-enable interrupts if disabled */ \
+} while(0)
 
 /* Thread Control Block Struct */
 typedef struct {
@@ -57,5 +61,6 @@ void OSThread_start(
 		OSThread *me, //pointer to the Thread Control Block
 		OSThreadHandler threadHandler, // pointer-to-function to the thread handler
 		void *stkSto, uint32_t stkSize); // memory & size of private thread stack
+
 
 #endif /* MIROS */

@@ -6,6 +6,7 @@
 ".\dbg\motor.o"
 ".\dbg\imu.o"
 ".\dbg\pid.o"
+".\dbg\bluetooth.o"
 ".\dbg\startup_tm4c123gh6pm.o"
 ".\dbg\system_tm4c123gh6pm.o"
 ".\dbg\miros.o"

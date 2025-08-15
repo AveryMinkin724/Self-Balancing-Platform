@@ -5,11 +5,13 @@
 #include "logger.h"
 #include "motor.h"
 #include "imu.h"
+#include "bluetooth.h"
 
 uint32_t stack_LEDHeartbeat[40]; //initialize array for stack, this will automatically be assigned to area of RAM
 OSThread LEDHeartbeat;
 void Task_LEDHeartbeat(void) {		
 		while (1) {
+				__disable_irq();
 				/* Keeps a green LED blinking to indicate system alive */
         BSP_ledGreenOn();
 				//Logger_log("Green On\r\n");
@@ -17,6 +19,7 @@ void Task_LEDHeartbeat(void) {
         BSP_ledGreenOff();
 				//Logger_log("Green Off\r\n");
         BSP_delay(BSP_TICKS_PER_SEC * 4U);
+				__enable_irq();
     }
 }
 
@@ -51,6 +54,9 @@ int main(void) {
 		
 		/* start IMU thread */
 		imu_start();
+		
+		/* start Bluetooth thread */
+		bt_command_start();
 		
 		/* transfer control to the RTOS to run the threads */
     OS_run();

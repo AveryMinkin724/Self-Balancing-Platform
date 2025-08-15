@@ -71,12 +71,12 @@ void Task_motor(void) {
 						set_motor_direction(DIR_FORWARD);
 						pwm_set_duty_cycle(clamp(-output, 0, 80));
 				}
-				
+				/*
 				char buf[64];
 				snprintf(buf, sizeof(buf),
 						"Output: %.2f\r\n", output);
 				Logger_log(buf);
-				
+				*/
 				/*		
 				set_motor_direction(DIR_FORWARD);
 				pwm_set_duty_cycle(60); // 60% speed

@@ -8,7 +8,7 @@ float Kp = 1.0f;
 float Ki = 10.0f;
 float Kd = 10.0f; 
 
-float PID_update(float current_pitch, float dt, float Kp, float Ki, float Kd) {
+float PID_update(float current_pitch, float dt) {
 		float target = -90.0f; //desired pitch
 		error = target - current_pitch;
 	

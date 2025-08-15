@@ -11,6 +11,6 @@ extern float Kp, Ki, Kd;
 extern volatile float output;  // Declaration for use in other files
 
 
-float PID_update(float, float, float, float, float);
+float PID_update(float, float);
 	
 #endif // PID_H

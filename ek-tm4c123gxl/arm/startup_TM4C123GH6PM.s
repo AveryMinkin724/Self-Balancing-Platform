@@ -71,7 +71,7 @@ __Vectors
         DCD     Default_Handler             ; Reserved
         DCD     PendSV_Handler              ; PendSV handler
         DCD     SysTick_Handler             ; SysTick handler
-        ALIGN  256  ; Extend the initial Vector Table to the 256B boundary
+        ALIGN  512  ; Extend the initial Vector Table to the 256B boundary
 
     ; Relocated Vector Table beyond the 256B region around address 0.
     ; That region is used for NULL-pointer protection by the MPU.

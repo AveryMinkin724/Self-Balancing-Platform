@@ -6,9 +6,9 @@
 #define ACCEL_SCALE (1.0f / 16384.0f) // g per LSB
 #define GYRO_SCALE  (1.0f / 131.0f)   // °/s per LSB
 
-//#define USE_HARDCODED_BIAS
+#define USE_HARDCODED_BIAS
 
-uint32_t stack_imu[256U];
+uint32_t stack_imu[512U];
 OSThread imuThread;
 Bias imu_bias = {0};  // Global variable, accessible throughout imu.c
 static float pitch = 0.0f; // Global filtered angle
@@ -110,50 +110,67 @@ uint8_t MPU6050_WhoAmI(void) {
 		return I2C0_ReadByte(MPU6050_ADDR, WHO_AM_I);
 }
 void MPU6050_Calibrate(void) {
-		int32_t ax_sum = 0, ay_sum = 0, az_sum = 0;
-		int32_t gx_sum = 0, gy_sum = 0, gz_sum = 0;
-	
-		BSP_ledBlueOn();
-		for(int i = 0; i < 100; ++i) {
-				//Read Gyro & Accel data 
-				int16_t ax = MPU6050_ReadWord(0x3B);  // ACCEL_XOUT_H
-				int16_t ay = MPU6050_ReadWord(0x3D);
-				int16_t az = MPU6050_ReadWord(0x3F);
-				int16_t gx = MPU6050_ReadWord(0x43);  // GYRO_XOUT_H
-				int16_t gy = MPU6050_ReadWord(0x45);
-				int16_t gz = MPU6050_ReadWord(0x47);
-				
-				ax_sum += ax;
-				ay_sum += ay;
-				az_sum += az;
-				gx_sum += gx;
-				gy_sum += gy;
-				gz_sum += gz;
+    
+    int32_t gx_sum = 0, gy_sum = 0, gz_sum = 0;
+
+    
+    int64_t gx_sq_sum = 0, gy_sq_sum = 0, gz_sq_sum = 0;
+
+    const int samples = 100;
+    BSP_ledBlueOn();
+    for (int i = 0; i < samples; ++i) {
+        
+        int16_t gx = MPU6050_ReadWord(0x43);
+        int16_t gy = MPU6050_ReadWord(0x45);
+        int16_t gz = MPU6050_ReadWord(0x47);
+        
+        gx_sum += gx; gy_sum += gy; gz_sum += gz;
+        
+        gx_sq_sum += (int64_t)gx * gx;
+        gy_sq_sum += (int64_t)gy * gy;
+        gz_sq_sum += (int64_t)gz * gz;
 				
 				char buf[128];
-				snprintf(buf, sizeof(buf),
-						"ACC[X:%d Y:%d Z:%d] GYRO[X:%d Y:%d Z:%d]\r\n",
-						ax, ay, az, gx, gy, gz);
-				Logger_log(buf);
+        snprintf(buf, sizeof(buf),
+            "GYRO[X:%d Y:%d Z:%d]\r\n",
+            gx, gy, gz);
+        Logger_log(buf);
 				
-				BSP_delay(BSP_TICKS_PER_SEC / 2U);  // 5 Hz logging rate
-		}
-		
-		imu_bias.ax = ax_sum / 100;
-		imu_bias.ay = ay_sum / 100;
-		imu_bias.az = az_sum / 100;
-		imu_bias.gx = gx_sum / 100;
-		imu_bias.gy = gy_sum / 100;
-		imu_bias.gz = gz_sum / 100;
-		Logger_log("Calibration Complete\r\n");
-		char buf[128];
-		snprintf(buf, sizeof(buf),
-			"Bias Values: ACC[X:%d Y:%d Z:%d] GYRO[X:%d Y:%d Z:%d]\r\n",
-				imu_bias.ax, imu_bias.ay, imu_bias.az, imu_bias.gx, imu_bias.gy, imu_bias.gz);
+        BSP_delay(BSP_TICKS_PER_SEC/3);  //  Hz sample rate
+    }
+
+    // Compute sample means (bias)
+    imu_bias.gx = gx_sum / samples;
+    imu_bias.gy = gy_sum / samples;
+    imu_bias.gz = gz_sum / samples;
+
+    // Sample standard deviation (divide by n - 1)
+    float gx_std = sqrtf((gx_sq_sum - (int64_t)gx_sum * gx_sum / samples) / (samples - 1));
+    float gy_std = sqrtf((gy_sq_sum - (int64_t)gy_sum * gy_sum / samples) / (samples - 1));
+    float gz_std = sqrtf((gz_sq_sum - (int64_t)gz_sum * gz_sum / samples) / (samples - 1));
+
+    Logger_log("Calibration Complete\r\n");
+
+    char buf[256];
+
+    // CSV output: bias values
+    snprintf(buf, sizeof(buf),
+				"%d\t%d\t%d\t%d\t%d\t%d\r\n",
+				imu_bias.ax, imu_bias.ay, imu_bias.az,
+				imu_bias.gx, imu_bias.gy, imu_bias.gz);
+		Logger_log("Bias (Accel X\tY\tZ | Gyro X\tY\tZ):\r\n");
 		Logger_log(buf);
-		
-		BSP_ledBlueOff();
+
+    // CSV output: std dev values
+    snprintf(buf, sizeof(buf),
+				"%.2f\t%.2f\t%.2f\r\n",
+				gx_std, gy_std, gz_std);
+		Logger_log("StdDev (Gyro X\tY\tZ):\r\n");
+		Logger_log(buf);
+
+    BSP_ledBlueOff();
 }
+
 
 void MPU6050_Init(void) {
     //Write 0x01 to power mgmt reg
@@ -175,17 +192,18 @@ float Complementary_Filter (void) {
 		int16_t gy = MPU6050_ReadWord(0x45);
 		int16_t gz = MPU6050_ReadWord(0x47);
 		
+		/* Removing bias from accelerometer does not work as it does for gyro because of gravity, consider deleting accel bias all together, it should be 0 for now*/
 		float ax_g = (ax - imu_bias.ax) * ACCEL_SCALE;
 		float ay_g = (ay - imu_bias.ay) * ACCEL_SCALE;
 		float az_g = (az - imu_bias.az) * ACCEL_SCALE;
-
-		float gyro_rate = (gx - imu_bias.gx) * GYRO_SCALE;
+	
+		float gx_dps = (gx - imu_bias.gx) * GYRO_SCALE;
 		float gy_dps = (gy - imu_bias.gy) * GYRO_SCALE;
 		float gz_dps = (gz - imu_bias.gz) * GYRO_SCALE;
 		
 		float accel_angle = atan2f(ax, az) * 180.0f / M_PI;  // degrees
 		
-		pitch = 0.90f * (pitch + gyro_rate * 0.01f) + 0.1f * accel_angle;
+		pitch = 0.90f * (pitch + gy_dps * dt) + 0.1f * accel_angle;
 		
 		/*
 		char buf[128];
@@ -193,7 +211,6 @@ float Complementary_Filter (void) {
 				"Pitch: %.2f\r\n", pitch);
 		Logger_log(buf);
 		*/
-		
 		return pitch;
 		
 }
@@ -203,12 +220,12 @@ void Task_imu(void) {
 		bool calibrated = false;
 	
 		#ifdef USE_HARDCODED_BIAS
-				imu_bias.ax = -104;  // Replace with your averaged log values
-				imu_bias.ay = 108;
-				imu_bias.az = 16232;
-				imu_bias.gx = 120;
-				imu_bias.gy = -88;
-				imu_bias.gz = 36;
+				imu_bias.ax = 0;  // Replace with your averaged log values
+				imu_bias.ay = 0;
+				imu_bias.az = 0;
+				imu_bias.gx = -535;
+				imu_bias.gy = -185;
+				imu_bias.gz = -232;
 		#else
 				MPU6050_Calibrate();
 		#endif
@@ -227,7 +244,7 @@ void Task_imu(void) {
 				*/
 			
 				float current_pitch = Complementary_Filter();
-				output = PID_update(current_pitch, dt, Kp, Ki, Kd);
+				output = PID_update(current_pitch, dt);
 				
 				BSP_delay(1); // 10 ms : BSP_TICKS_PER_SEC = 100, systick fires every 10 ms, argument of 1 into BSP delay() simply delays 1 tick which is 10 ms, 2 = 20 ms, 3 30ms ... 100 = 1 sec
 		}

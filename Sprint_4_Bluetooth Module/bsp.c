@@ -16,6 +16,9 @@
 #define TEST_PIN  (1U << 4)
 
 static uint32_t volatile l_tickCtr;
+char uart_rx_buffer[64];
+volatile int rx_index = 0;
+volatile bool command_ready = false;
 
 void SysTick_Handler(void) {
     GPIOF_AHB->DATA_Bits[TEST_PIN] = TEST_PIN;
@@ -83,6 +86,32 @@ void BSP_delay(uint32_t ticks) {
     uint32_t start = BSP_tickCtr();
     while ((BSP_tickCtr() - start) < ticks) {
     }
+}
+
+void UART5_IRQHandler(void) {
+    BSP_ledRedOn();
+		BSP_ledRedOff();
+	 
+		if (UART5_MIS_R & (UART_MIS_RXMIS | UART_MIS_RTMIS)) {
+        char c = (char)(UART5_DR_R & 0xFF);  // Read from UART
+        UART5_ICR_R = UART_ICR_RXIC;
+
+        if (rx_index < sizeof(uart_rx_buffer) - 1) {
+            if (c == '\n' || c == '\r') {
+                uart_rx_buffer[rx_index] = '\0';  // Null terminate
+                command_ready = true;       // Flag to signal command is ready
+                rx_index = 0;               // Reset for next line
+            } else {
+                uart_rx_buffer[rx_index++] = c;  // Store char in buffer
+            }
+        } else {
+            rx_index = 0; // buffer overflow prevention
+        }
+    }
+		
+    //QK_ISR_EXIT();  // ?? Call RTOS scheduler after ISR
+		OS_sched();             /* call the scheduler */ \
+    __enable_irq();
 }
 
 void BSP_ledRedOn(void) {
