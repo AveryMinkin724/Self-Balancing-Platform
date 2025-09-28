@@ -1,0 +1,11 @@
+Comment,Designator,Footprint,JLCPCB Part #（optional）
+CAP CER 0.1UF 50V X7R 0603,"C1,C4,C5,C8,C9",Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder,
+CAP ALUM 100UF 20% 35V SMD,C2,Capacitor_SMD:CP_Elec_6.3x5.4,
+CAP ALUM POLY 47UF 20% 35V SMD,C3,Capacitor_SMD:CP_Elec_6.3x5.7,
+CAP ALUM POLY 10UF 20% 25V SMD,C6,Capacitor_SMD:CP_Elec_6.3x5.7,
+CONN HEADER VERT 20POS 2.54MM,"J1,J2",Connector_PinHeader_2.54mm:PinHeader_2x10_P2.54mm_Vertical,
+CONN HEADER VERT 6POS 2.54MM,"J3,J5",Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical,
+CONN HEADER VERT 8POS 2.54MM,J4,Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical,
+CONN HEADER VERT 2POS 2.54MM,J9,Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical,
+SWITCH SLIDE SPDT 300MA 6V,"SW1,SW2,SW3,SW4",Button_Switch_SMD:SW_SPDT_CK_JS102011SAQN,
+SWITCH SLIDE DIP SPST 0.1A 6V,SW5,Button_Switch_SMD:SW_DIP_SPSTx01_Slide_Copal_CHS-01A_W5.08mm_P1.27mm_JPin,

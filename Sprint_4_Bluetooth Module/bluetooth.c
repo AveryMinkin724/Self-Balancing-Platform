@@ -1,6 +1,6 @@
 #include "bluetooth.h"
 
-uint32_t stack_bt_command[128U];
+uint32_t stack_bt_command[512U];
 OSThread btCommandThread;
 
 void bt_command_start(void) {
@@ -18,7 +18,7 @@ void Task_bt_command(void) {
         // Command is ready
         command_ready = false;  // ?? Reset flag
 
-        /*float kp_new, ki_new, kd_new;
+        float kp_new, ki_new, kd_new;
         if (strncmp(uart_rx_buffer, "SET", 3) == 0) {
             if (sscanf(uart_rx_buffer, "SET %f %f %f", &kp_new, &ki_new, &kd_new) == 3) {
                 Kp = kp_new;
@@ -30,9 +30,9 @@ void Task_bt_command(void) {
 									"New Ks: Kp: %.2f Ki: %.2f Kd: %.2f\r\n", Kp, Ki, Kd);
 								Logger_log(buf);
             }
-        }*/
+        }/*
 				char buf[128];
 				snprintf(buf, sizeof(buf), "RX: %s\r\n", uart_rx_buffer);
-				Logger_log(buf);
+				Logger_log(buf);*/
     }
 }

@@ -3,7 +3,7 @@
 #define UART_MODE_USB 1
 #define UART_MODE_BT  2
 
-#define UART_MODE UART_MODE_USB  // Change this line to switch between USB and BT
+#define UART_MODE UART_MODE_BT  // Change this line to switch between USB and BT
 
 /* 115200 Baude rate */
 #define USB_BAUD_I 8  // Baud Rate Divisor 8.680555
