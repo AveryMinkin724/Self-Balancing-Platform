@@ -13,45 +13,83 @@ void motor_start(void) {
 }
 
 void motor_init(void) {
-		SYSCTL_RCGCGPIO_R |= (1U << 0) | (1U << 1); // Enable clock for GPIOA (0) and GPIOB (1)
-		for (volatile int i = 0; i < 1000; i++) {}   // Delay for GPIO stabilization
-	
-		GPIO_PORTA_DIR_R |= (1U << 3) | (1U << 4);    // Set PA3, PA4 as output
-		GPIO_PORTA_DEN_R |= (1U << 3) | (1U << 4);    // Digital enable for PA3, PA4
+    // === Enable Clocks ===
+    SYSCTL_RCGCGPIO_R |= (1U << 0) | (1U << 1) | (1U << 3); 
+    // GPIOA (0), GPIOB (1), GPIOD (3)
+    SYSCTL->RCGCPWM |= (1U << 0);   // Enable clock for PWM0
+    for (volatile int i = 0; i < 1000; i++) {} // Delay
 
-		SYSCTL->RCGCPWM |= (1 << 0);   					// Enable clock to PWM0 module
-		for (volatile int i = 0; i < 1000; i++) {}   // Delay loop for peripheral clock to stabilize
-		SYSCTL->RCC &= ~(1 << 20);  						// Clear USEPWMDIV bit. Ensure PWM uses system clock (default is OK, but for clarity)
-		
-		GPIO_PORTB_AFSEL_R |= (1 << 6);         // Enable alternate function on PB6
-		GPIO_PORTB_PCTL_R &= ~(0xF << 24);      // Clear PCTL[27:24] for PB6
-		GPIO_PORTB_PCTL_R |=  (0x4 << 24);      // Set PB6 to M0PWM0 (function 4)
-		GPIO_PORTB_DEN_R  |=  (1 << 6);         // Enable digital function
-		GPIO_PORTB_DIR_R  |=  (1 << 6);         // Set PB6 as output
-		
-		PWM0->_0_CTL &= ~0x01;         	// Disable Generator 0 while configuring
-		PWM0-> _0_GENA = 0x0000008C;    // Set on LOAD, clear on CMPA down
-		uint32_t pwm_period = 16000; 		// For 10kHz at 16 MHz system clock
-		PWM0->_0_LOAD = pwm_period - 1;
-		PWM0->_0_CMPA = pwm_period / 2; // 50% duty cycle
-		PWM0->_0_CTL |= 0x01;         	// Enable Generator 0
-		PWM0->ENABLE |= (1 << 0);     	// Enable output M0PWM0 (PB6)
+    SYSCTL_RCC_R &= ~(1 << 20);  // Ensure system clock is used (USEPWMDIV=0)
+
+    // === Configure Motor A (Left) ===
+    // IN1 = PA3, IN2 = PA4
+    GPIO_PORTA_DIR_R |= (1U << 3) | (1U << 4);  // Outputs
+    GPIO_PORTA_DEN_R |= (1U << 3) | (1U << 4);  // Digital enable
+
+    // ENA = PB6 (M0PWM0)
+    GPIO_PORTB_AFSEL_R |= (1 << 6);
+    GPIO_PORTB_PCTL_R &= ~(0xF << 24);
+    GPIO_PORTB_PCTL_R |=  (0x4 << 24);   // M0PWM0
+    GPIO_PORTB_DEN_R  |=  (1 << 6);
+    GPIO_PORTB_DIR_R  |=  (1 << 6);
+
+    // === Configure Motor B (Right) ===
+    // IN3 = PD6, IN4 = PD7
+    GPIO_PORTD_LOCK_R = 0x4C4F434B;
+    GPIO_PORTD_CR_R   |= (1U << 6) | (1U << 7);
+    GPIO_PORTD_DIR_R  |= (1U << 6) | (1U << 7);
+    GPIO_PORTD_DEN_R  |= (1U << 6) | (1U << 7);
+
+    // ENB = PB7 (M0PWM1)
+    GPIO_PORTB_AFSEL_R |= (1 << 7);
+    GPIO_PORTB_PCTL_R &= ~(0xF << 28);
+    GPIO_PORTB_PCTL_R |=  (0x4 << 28);   // M0PWM1
+    GPIO_PORTB_DEN_R  |=  (1 << 7);
+    GPIO_PORTB_DIR_R  |=  (1 << 7);
+
+    // === Configure PWM Generator 0 ===
+    PWM0->_0_CTL &= ~0x01;             // Disable Generator 0 while configuring
+    PWM0->_0_GENA = 0x0000008C;        // Set on LOAD, clear on CMPA down (for M0PWM0)
+    PWM0->_0_GENB = 0x0000080C;        // Set on LOAD, clear on CMPB down (for M0PWM1)
+
+    uint32_t pwm_period = 16000;       // 10kHz @ 16 MHz
+    PWM0->_0_LOAD = pwm_period - 1;
+    PWM0->_0_CMPA = pwm_period / 2;    // 50% duty (ENA)
+    PWM0->_0_CMPB = pwm_period / 2;    // 50% duty (ENB)
+    PWM0->_0_CTL |= 0x01;              // Enable Generator 0
+    PWM0->ENABLE |= (1 << 0) | (1 << 1); // Enable M0PWM0 (PB6) and M0PWM1 (PB7)
 }
 
 void pwm_set_duty_cycle(uint8_t percent) {
     if (percent > 100) percent = 100;
-    uint32_t load = PWM0->_0_LOAD + 1; // +1 since LOAD = period - 1
-    uint32_t cmpa = (load * (100 - percent)) / 100;
-    PWM0->_0_CMPA = cmpa;
+
+    // PB6 = M0PWM0, PB7 = M0PWM1 -> both from PWM0 Generator 0
+    uint32_t load = PWM0->_0_LOAD + 1;
+
+    uint32_t cmpA = (load * (100 - percent)) / 100;
+    uint32_t cmpB = (load * (100 - percent)) / 100;
+
+    // Update both A and B compare registers in Generator 0
+    PWM0->_0_CMPA = cmpA;   // PB6 (M0PWM0)
+    PWM0->_0_CMPB = cmpB;   // PB7 (M0PWM1)
 }
 
 void set_motor_direction(uint8_t dir) {
     if (dir == DIR_FORWARD) {
+        // === Motor A (Left) ===
         GPIO_PORTA_DATA_R |=  (1U << 3);
         GPIO_PORTA_DATA_R &= ~(1U << 4);
-    } else {
+        // === Motor B (Right) ===
+				GPIO_PORTD_DATA_R &= ~(1U << 6);
+        GPIO_PORTD_DATA_R |=  (1U << 7);
+    } 
+    else if (dir == DIR_REVERSE) {
+        // === Motor A (Left) ===
         GPIO_PORTA_DATA_R &= ~(1U << 3);
         GPIO_PORTA_DATA_R |=  (1U << 4);
+        // === Motor B (Right) ===
+        GPIO_PORTD_DATA_R |=  (1U << 6);
+        GPIO_PORTD_DATA_R &= ~(1U << 7);
     }
 }
 
@@ -66,10 +104,10 @@ void Task_motor(void) {
 				
 				if (output > 0) {
 						set_motor_direction(DIR_REVERSE);
-						pwm_set_duty_cycle(clamp(output, 0, 80)); // Clamp to 0–100%
+						pwm_set_duty_cycle(clamp(output, 0, 100)); // Clamp to 0–100%
 				} else {
 						set_motor_direction(DIR_FORWARD);
-						pwm_set_duty_cycle(clamp(-output, 0, 80));
+						pwm_set_duty_cycle(clamp(-output, 0, 100));
 				}
 				/*
 				char buf[64];

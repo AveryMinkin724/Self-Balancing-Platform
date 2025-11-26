@@ -68,7 +68,6 @@ void uart_init(void)
 		// Enable UART, HSE cleared (bit 5), TXE & RXE set
 		UART5_CTL_R = 0x301; //|= (1U << 0) | (1U << 8) | (1U << 9); 0b1100000001
 		
-		
 		diag_vectors();
 
 		__enable_irq();

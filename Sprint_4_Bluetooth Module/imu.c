@@ -6,13 +6,14 @@
 #define ACCEL_SCALE (1.0f / 16384.0f) // g per LSB
 #define GYRO_SCALE  (1.0f / 131.0f)   // °/s per LSB
 
-#define USE_HARDCODED_BIAS
+//#define USE_HARDCODED_BIAS
 
 uint32_t stack_imu[512U];
 OSThread imuThread;
 Bias imu_bias = {0};  // Global variable, accessible throughout imu.c
 static float pitch = 0.0f; // Global filtered angle
-float dt = 0.01f;
+float dt = 0.001;
+static uint8_t printCounter = 0;
 
 void imu_start(void) {
 		OSThread_start(&imuThread,
@@ -112,7 +113,6 @@ uint8_t MPU6050_WhoAmI(void) {
 void MPU6050_Calibrate(void) {
     
     int32_t gx_sum = 0, gy_sum = 0, gz_sum = 0;
-
     
     int64_t gx_sq_sum = 0, gy_sq_sum = 0, gz_sq_sum = 0;
 
@@ -173,7 +173,7 @@ void MPU6050_Calibrate(void) {
 
 
 void MPU6050_Init(void) {
-    //Write 0x01 to power mgmt reg
+    // Write 0x01 to power mgmt reg
 		I2C0_WriteByte(MPU6050_ADDR, MPU6050_PWR_MGMT_1, 0x01);  // Wake up & set clock
     while (I2C0_MASTER_MCS_R & 0x01);                 // wait for done
 		// Read back
@@ -205,12 +205,6 @@ float Complementary_Filter (void) {
 		
 		pitch = 0.90f * (pitch + gy_dps * dt) + 0.1f * accel_angle;
 		
-		/*
-		char buf[128];
-		snprintf(buf, sizeof(buf),
-				"Pitch: %.2f\r\n", pitch);
-		Logger_log(buf);
-		*/
 		return pitch;
 		
 }
@@ -242,10 +236,18 @@ void Task_imu(void) {
             calibrated = true;
         }
 				*/
-			
 				float current_pitch = Complementary_Filter();
 				output = PID_update(current_pitch, dt);
+			
+				// Only print every 10 samples (10 × 1ms = 10ms)
+				if (++printCounter >= 10) {
+						printCounter = 0;
+						
+						char buf[128];
+						snprintf(buf, sizeof(buf), "%.2f  %.2f\r\n", current_pitch, output);
+						Logger_log(buf);
+				}
 				
-				BSP_delay(1); // 10 ms : BSP_TICKS_PER_SEC = 100, systick fires every 10 ms, argument of 1 into BSP delay() simply delays 1 tick which is 10 ms, 2 = 20 ms, 3 30ms ... 100 = 1 sec
+				BSP_delay(dt*BSP_TICKS_PER_SEC); // 1 ms : BSP_TICKS_PER_SEC = 1000, systick fires every 10 ms, argument of 1 into BSP delay() simply delays 1 tick which is 10 ms, 2 = 20 ms, 3 30ms ... 100 = 1 sec
 		}
 }

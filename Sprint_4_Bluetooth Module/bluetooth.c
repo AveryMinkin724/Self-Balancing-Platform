@@ -17,14 +17,16 @@ void Task_bt_command(void) {
 
         // Command is ready
         command_ready = false;  // ?? Reset flag
-
+								
         float kp_new, ki_new, kd_new;
-        if (strncmp(uart_rx_buffer, "SET", 3) == 0) {
+        if (strncmp(uart_rx_buffer, "SET", 4) == 0) {
             if (sscanf(uart_rx_buffer, "SET %f %f %f", &kp_new, &ki_new, &kd_new) == 3) {
                 Kp = kp_new;
                 Ki = ki_new;
                 Kd = kd_new;
-							
+								
+								//Logger_log("PiNG\r\n");
+								BSP_ledRedOn();
 								char buf[128];
 								snprintf(buf, sizeof(buf),
 									"New Ks: Kp: %.2f Ki: %.2f Kd: %.2f\r\n", Kp, Ki, Kd);

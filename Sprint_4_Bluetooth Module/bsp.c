@@ -94,7 +94,7 @@ void UART5_IRQHandler(void) {
 	 
 		if (UART5_MIS_R & (UART_MIS_RXMIS | UART_MIS_RTMIS)) {
         char c = (char)(UART5_DR_R & 0xFF);  // Read from UART
-        UART5_ICR_R = UART_ICR_RXIC;
+        UART5_ICR_R = UART_ICR_RXIC | UART_ICR_RTIC;  // clear both
 
         if (rx_index < sizeof(uart_rx_buffer) - 1) {
             if (c == '\n' || c == '\r') {
@@ -109,9 +109,9 @@ void UART5_IRQHandler(void) {
         }
     }
 		
-    //QK_ISR_EXIT();  // ?? Call RTOS scheduler after ISR
-		OS_sched();             /* call the scheduler */ \
-    __enable_irq();
+    QK_ISR_EXIT();  // ?? Call RTOS scheduler after ISR
+		//OS_sched();       //should not do this inside IRQ      /* call the scheduler */ \
+    //__enable_irq();  //should not do this inside IRQ
 }
 
 void BSP_ledRedOn(void) {
