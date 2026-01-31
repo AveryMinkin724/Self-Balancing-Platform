@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 /* system clock tick [Hz] */
-#define BSP_TICKS_PER_SEC 1000U 
+#define BSP_TICKS_PER_SEC 1000U // loop rate = 1000 Hz
 
 void BSP_init(void);
 void Clock_init(void);

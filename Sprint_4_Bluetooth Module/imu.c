@@ -6,13 +6,13 @@
 #define ACCEL_SCALE (1.0f / 16384.0f) // g per LSB
 #define GYRO_SCALE  (1.0f / 131.0f)   // °/s per LSB
 
-//#define USE_HARDCODED_BIAS
+#define USE_HARDCODED_BIAS
 
 uint32_t stack_imu[512U];
 OSThread imuThread;
 Bias imu_bias = {0};  // Global variable, accessible throughout imu.c
 static float pitch = 0.0f; // Global filtered angle
-float dt = 0.001;
+float dt = 0.001; //fixed 1000 Hz
 static uint8_t printCounter = 0;
 
 void imu_start(void) {
@@ -182,7 +182,7 @@ void MPU6050_Init(void) {
 				
 }
 
-float Complementary_Filter (void) {
+float Complementary_Filter (float dt) {
 		
 		//Read Gyro & Accel data 
 		int16_t ax = MPU6050_ReadWord(0x3B);  // ACCEL_XOUT_H
@@ -203,23 +203,23 @@ float Complementary_Filter (void) {
 		
 		float accel_angle = atan2f(ax, az) * 180.0f / M_PI;  // degrees
 		
-		pitch = 0.90f * (pitch + gy_dps * dt) + 0.1f * accel_angle;
+		pitch = 0.95f * (pitch + gy_dps * dt) + 0.05f * accel_angle;
 		
 		return pitch;
 		
 }
 
-
 void Task_imu(void) {
 		bool calibrated = false;
+	  static uint32_t last_tick = 0;
 	
 		#ifdef USE_HARDCODED_BIAS
 				imu_bias.ax = 0;  // Replace with your averaged log values
 				imu_bias.ay = 0;
 				imu_bias.az = 0;
-				imu_bias.gx = -535;
-				imu_bias.gy = -185;
-				imu_bias.gz = -232;
+				imu_bias.gx = -529; //-535;
+				imu_bias.gy = -223; //-185;
+				imu_bias.gz = -212; //-232;
 		#else
 				MPU6050_Calibrate();
 		#endif
@@ -236,18 +236,26 @@ void Task_imu(void) {
             calibrated = true;
         }
 				*/
-				float current_pitch = Complementary_Filter();
+				
+				float current_pitch = Complementary_Filter(dt);
 				output = PID_update(current_pitch, dt);
-			
+								
 				// Only print every 10 samples (10 × 1ms = 10ms)
 				if (++printCounter >= 10) {
 						printCounter = 0;
 						
 						char buf[128];
-						snprintf(buf, sizeof(buf), "%.2f  %.2f\r\n", current_pitch, output);
+						snprintf(buf, sizeof(buf), "%.2f,%.2f\r\n", current_pitch, output);
 						Logger_log(buf);
+						
 				}
 				
-				BSP_delay(dt*BSP_TICKS_PER_SEC); // 1 ms : BSP_TICKS_PER_SEC = 1000, systick fires every 10 ms, argument of 1 into BSP delay() simply delays 1 tick which is 10 ms, 2 = 20 ms, 3 30ms ... 100 = 1 sec
+				// ---- LED timeout handling ----
+				if (red_led_active && BSP_tickCtr() >= red_led_off_time) {
+						BSP_ledRedOff();
+						red_led_active = false;
+				}
+				
+				BSP_delay(dt*BSP_TICKS_PER_SEC); // 1 tick = 1 ms, 
 		}
 }

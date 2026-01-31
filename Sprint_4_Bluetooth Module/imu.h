@@ -8,6 +8,7 @@
 #include "bsp.h"
 #include "logger.h"
 #include "PID.h"
+#include "bluetooth.h"
 #define _USE_MATH_DEFINES  // Must be defined before including math.h
 #define M_PI 3.14159265358979323846f
 #include <math.h>
@@ -21,9 +22,9 @@ uint8_t MPU6050_WhoAmI(void);
 void MPU6050_Calibrate(void);
 void MPU6050_Init(void);
 int16_t MPU6050_ReadWord(uint8_t reg_addr);
-float Complementary_Filter (void);
+float Complementary_Filter (float dt);
 
-extern float dt;
+//extern float dt; don't need to declare as global, local to imu.c task and passed to PID function
 
 typedef struct {
 		int16_t ax, ay, az;

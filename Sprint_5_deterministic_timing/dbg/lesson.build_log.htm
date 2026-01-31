@@ -1,0 +1,66 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.41.0.0
+Copyright (C) 2024 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Avery Minkin
+General Dynamics
+User-based license: Keil MDK Community (non-commercial free of charge)
+Valid until: May 31 2033. Cached until: Jan 30 2026
+ 
+Tool Versions:
+Toolchain:       Keil MDK Community (non-commercial free of charge  Version: 5.41.0.0
+Toolchain Path:  C:\Users\avtmn\AppData\Local\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.22
+Assembler:       Armasm.exe V6.22
+Linker/Locator:  ArmLink.exe V6.22
+Library Manager: ArmAr.exe V6.22
+Hex Converter:   FromElf.exe V6.22
+CPU DLL:         SARMCM3.DLL V5.41.0.0
+Dialog DLL:      DCM.DLL V1.17.5.0
+Target DLL:      lmidk-agdi.dll V???
+Dialog DLL:      TCM.DLL V1.56.4.0
+ 
+<h2>Project:</h2>
+C:\Users\avtmn\Documents\Embedded Development Portfolio\Self Balancing Platform (SBP)\Sprint_5_deterministic_timing\lesson.uvprojx
+Project File Date:  08/03/2025
+
+<h2>Output:</h2>
+*** Using Compiler 'V6.22', folder: 'C:\Users\avtmn\AppData\Local\Keil_v5\ARM\ARMCLANG\Bin'
+Rebuild target 'dbg'
+compiling main.c...
+armclang: warning: '--target=armv7em-arm-none-eabi' is not supported. Supported values for this option are 'arm-arm-none-eabi' or 'aarch64-arm-none-eabi' [-Wunsupported-option]
+"../ek-tm4c123gxl/arm/startup_TM4C123GH6PM.s", line 74: Warning: A1479W: Requested alignment 512 is greater than area alignment 256, which has been increased
+   74 00000040         ALIGN  512  ; Extend the initial Vector Table to the 256B boundary
+0 Errors, 1 Warning
+assembling startup_TM4C123GH6PM.s...
+compiling motor.c...
+compiling miros.c...
+compiling logger.c...
+compiling uart.c...
+compiling system_TM4C123GH6PM.c...
+compiling bluetooth.c...
+compiling PID.c...
+compiling bsp.c...
+compiling imu.c...
+linking...
+Program Size: Code=18640 RO-data=2084 RW-data=16 ZI-data=9024  
+".\dbg\lesson.axf" - 0 Error(s), 1 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.TM4C_DFP.1.1.0.pack
+                Keil::TM4C_DFP@1.1.0
+                Texas Instruments Tiva C Series Device Support and Examples
+
+<h2>Collection of Component include folders:</h2>
+  C:/Users/avtmn/AppData/Local/Arm/Packs/Keil/TM4C_DFP/1.1.0/Device/Include/TM4C123
+
+<h2>Collection of Component Files used:</h2>
+Build Time Elapsed:  00:00:00
+</pre>
+</body>
+</html>

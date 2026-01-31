@@ -4,13 +4,13 @@ float error = 0.0f;
 float integral = 0.0f;
 float prev_error = 0.0f;
 volatile float output = 0.0f; // Global definition
-float Kp = 8.0f;
-float Ki = 0.0f;
-float Kd = 0.3f; 
+float Kp = 15.0f; //9.0f; //8.25
+float Ki = 0.0f; //3.3f;
+float Kd = 0.0f; //0.11f; //0.3
 static float derivative_filtered = 0.0f;
 
 float PID_update(float current_pitch, float dt) {
-		float target = -85.9f; //desired pitch
+		float target = -82.75f; //desired pitch
 		error = target - current_pitch;
 
     // Normal PID
@@ -19,7 +19,7 @@ float PID_update(float current_pitch, float dt) {
     float derivative_raw = (error - prev_error) / dt;
 
     // Low-pass filter
-    const float alpha = 0.985f;  // try 0.85–0.95
+    const float alpha = 0.997f;  // try 0.85–0.95
     derivative_filtered = alpha * derivative_filtered 
                         + (1.0f - alpha) * derivative_raw;
 
